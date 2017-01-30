@@ -19,7 +19,10 @@
 
 package coinbase
 
-import "bytes"
+import (
+  "bytes"
+  "time"
+)
 
 /*
 
@@ -54,8 +57,8 @@ type APIAccountData struct {
   Currency string
   Balance APIBalance
   Native_balance APIBalance
-  Created_at string
-  Updated_at string
+  Created_at *time.Time
+  Updated_at *time.Time
   Resource string
   Resource_path string
 }

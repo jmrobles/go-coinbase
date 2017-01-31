@@ -29,12 +29,10 @@ The library was tested against coinbase.com APIv2
  - [ ] Orders
  - [ ] Checkouts
 * Data Endpoints
- - [x] Currencies\*
- - [x] Exchange rates\*
- - [x] Prices\*
- - [x] Time\*
-
-\* with unit-test coverage
+ - [x] Currencies
+ - [x] Exchange rates
+ - [x] Prices
+ - [x] Time
 
 ## Example
 

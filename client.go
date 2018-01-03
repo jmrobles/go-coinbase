@@ -49,102 +49,116 @@ Example:
 package coinbase
 
 import (
-  "fmt"
-  "encoding/json"
-  "net/http"
-  "crypto/sha256"
-  "crypto/hmac"
-  "strconv"
-  "io"
+	"bytes"
+	"crypto/hmac"
+	"crypto/sha256"
+	"encoding/json"
+	"fmt"
+	"io"
+	"io/ioutil"
+	"net/http"
+	"strconv"
 )
 
 const (
-  // ENDPOINT defaults to https://api.coinbase.com
-  // but can be overridden for test purposes
-  ENDPOINT = "https://api.coinbase.com"
-  // API_VERSION since version two you have to
-  // specify a API version in your http request headers
-  API_VERSION = "2016-03-08"
+	// ENDPOINT defaults to https://api.coinbase.com
+	// but can be overridden for test purposes
+	ENDPOINT = "https://api.coinbase.com"
+	// API_VERSION since version two you have to
+	// specify a API version in your http request headers
+	API_VERSION = "2016-03-08"
 )
 
 // APIClient is the interface for most of the API calls
 // If Endpoint or ApiVersion aren't defined the library
 // will use the default https://api.coinbase.com
 type APIClient struct {
-  Key string
-  Secret string
-  Endpoint string
-  ApiVersion string
+	Key        string
+	Secret     string
+	Endpoint   string
+	ApiVersion string
 }
 
 // APIClientEpoch is used for decoding json "/v2/time" responses
 type APIClientEpoch struct {
-  Data struct {
-    Epoch int64
-  }
+	Data struct {
+		Epoch int64
+	}
 }
 
 // Fetch works as a wrapper for all kind of http requests. It requires a http method
 // and a relative path to the API endpoint. It will try to decode all results into
 // a single interface type which you can provide.
 func (a *APIClient) Fetch(method, path string, body io.Reader, result interface{}) error {
-  if a.Endpoint == "" {
-    // use default endpoint
-    a.Endpoint = ENDPOINT
-  }
-  if a.ApiVersion == "" {
-    // use default api version
-    a.ApiVersion = API_VERSION
-  }
+	if a.Endpoint == "" {
+		// use default endpoint
+		a.Endpoint = ENDPOINT
+	}
+	if a.ApiVersion == "" {
+		// use default api version
+		a.ApiVersion = API_VERSION
+	}
+	var (
+		bodyTee     = body
+		bodyForAuth bytes.Buffer
+	)
 
-  client := &http.Client{}
-  req, err := http.NewRequest(method, a.Endpoint + path, body)
-  if err != nil {
-    return err
-  }
+	if body != nil {
+		bodyTee = io.TeeReader(body, &bodyForAuth)
+	}
 
-  req.Header.Set("Content-Type", "application/json")
-  req.Header.Set("CB-VERSION", a.ApiVersion)
-  // do not authenticate on public time api call
-  if path[len(path)-4:] != "time" {
-    err = a.Authenticate(path, req)
-    if err != nil {
-      return err
-    }
-  }
+	client := &http.Client{}
+	req, err := http.NewRequest(method, a.Endpoint+path, bodyTee)
+	if err != nil {
+		return err
+	}
 
-  resp, err := client.Do(req)
-  if err != nil {
-    return err
-  }
-  err = json.NewDecoder(resp.Body).Decode(result)
-  if err != nil {
-    return err
-  }
-  return nil
+	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("CB-VERSION", a.ApiVersion)
+	// do not authenticate on public time api call
+	if path[len(path)-4:] != "time" {
+		err = a.Authenticate(path, req, io.Reader(&bodyForAuth))
+		if err != nil {
+			return err
+		}
+	}
+
+	resp, err := client.Do(req)
+	if err != nil {
+		return err
+	}
+	err = json.NewDecoder(resp.Body).Decode(result)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 // Authenticate works with the Fetch call and adds certain Headers
 // to the http request. This includes the actual API key and the
 // timestamp of the request. Also a signature which is encoded
 // with hmac and the API secret key.
-func (a *APIClient) Authenticate(path string, req *http.Request) error {
-  time, err := a.GetCurrentTime()
-  if err != nil {
-    return err
-  }
-  timestamp := strconv.FormatInt(time.Data.Epoch, 10)
-  message := timestamp + req.Method + path
+func (a *APIClient) Authenticate(path string, req *http.Request, body io.Reader) error {
+	time, err := a.GetCurrentTime()
+	if err != nil {
+		return err
+	}
+	timestamp := strconv.FormatInt(time.Data.Epoch, 10)
+	bodyData, err := ioutil.ReadAll(body)
+	if err != nil {
+		return err
+	}
+	message := timestamp + req.Method + path + string(bodyData)
 
-  sha := sha256.New
-  h := hmac.New(sha, []byte(a.Secret))
-  h.Write([]byte(message))
+	sha := sha256.New
+	h := hmac.New(sha, []byte(a.Secret))
+	h.Write([]byte(message))
 
-  signature := fmt.Sprintf("%x", h.Sum(nil))
+	signature := fmt.Sprintf("%x", h.Sum(nil))
 
-  req.Header.Set("CB-ACCESS-KEY", a.Key)
-  req.Header.Set("CB-ACCESS-SIGN", signature)
-  req.Header.Set("CB-ACCESS-TIMESTAMP", timestamp)
+	req.Header.Set("CB-ACCESS-KEY", a.Key)
+	req.Header.Set("CB-ACCESS-SIGN", signature)
+	req.Header.Set("CB-ACCESS-TIMESTAMP", timestamp)
 
-  return nil
+	return nil
 }

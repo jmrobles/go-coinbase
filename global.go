@@ -20,8 +20,8 @@
 package coinbase
 
 import (
-  "fmt"
-  "time"
+	"fmt"
+	"time"
 )
 
 // AccountId is a unique ID for your wallet
@@ -47,12 +47,12 @@ Example Response:
 
 */
 type APIPagination struct {
-  Ending_before string
-  Starting_after string
-  Limit int
-  Order string
-  Previous_uri string
-  Next_uri string
+	Ending_before  string
+	Starting_after string
+	Limit          int
+	Order          string
+	Previous_uri   string
+	Next_uri       string
 }
 
 /*
@@ -66,8 +66,8 @@ Example Response:
 
 */
 type APIBalance struct {
-  Amount float64 `json:",string"`
-  Currency string
+	Amount   float64 `json:",string"`
+	Currency string
 }
 
 /*
@@ -82,9 +82,9 @@ Example Response:
 
 */
 type APIResource struct {
-  Id string
-  Resource string
-  Resource_path string
+	Id            string
+	Resource      string
+	Resource_path string
 }
 
 /*
@@ -131,28 +131,28 @@ Example Response:
 
 */
 type APIWalletTransferData struct {
-  Id string
-  Status string
-  Payment_method APIResource
-  Transaction APIResource
-  Amount APIBalance
-  Total APIBalance
-  Subtotal APIBalance
-  Created_at string
-  Updated_at string
-  Resource string
-  Resource_path string
-  Committed bool
-  Instant bool
-  Fee APIBalance
-  Payout_at string
+	Id             string
+	Status         string
+	Payment_method APIResource
+	Transaction    APIResource
+	Amount         APIBalance
+	Total          APIBalance
+	Subtotal       APIBalance
+	Created_at     string
+	Updated_at     string
+	Resource       string
+	Resource_path  string
+	Committed      bool
+	Instant        bool
+	Fee            APIBalance
+	Payout_at      string
 }
 type APIWalletTransferList struct {
-  Pagination APIPagination
-  Data []APIWalletTransferData
+	Pagination APIPagination
+	Data       []APIWalletTransferData
 }
 type APIWalletTransfer struct {
-  Data APIWalletTransferData
+	Data APIWalletTransferData
 }
 
 /*
@@ -166,28 +166,48 @@ Example request:
  }
 
 */
-type APIWalletTransferOrder struct {
-  Amount float64 `json:",string"`
-  Total float64 `json:",string"`
-  Currency string
-  Payment_method string
-  Agree_btc_amount_varies bool
-  Commit bool
-  Quote bool
+
+type APIWalletTransferOrderByAmount struct {
+	Amount                  float64 `json:"amount,string"`
+	Currency                string  `json:"currency,string"`
+	Payment_method          *string `json:"payment_method,string,omitempty"`
+	Agree_btc_amount_varies *bool   `json:"agree_btc_amount_varies,omitempty"`
+	Commit                  *bool   `json:"commit,omitempty"`
+	Quote                   *bool   `json:"quote,omitempty"`
+}
+
+/*
+
+Example request:
+
+ {
+   "total": "10",
+   "currency": "BTC",
+   "payment_method": "83562370-3e5c-51db-87da-752af5ab9559"
+ }
+
+*/
+type APIWalletTransferOrderByTotal struct {
+	Total                   float64 `json:"total,string"`
+	Currency                string  `json:"currency,string"`
+	Payment_method          *string `json:"payment_method,string,omitempty"`
+	Agree_btc_amount_varies *bool   `json:"agree_btc_amount_varies,omitempty"`
+	Commit                  *bool   `json:"commit,omitempty"`
+	Quote                   *bool   `json:"quote,omitempty"`
 }
 
 //// Configuration Structs //
 
-type ConfigPrice struct{
-  From string
-  To string
-  Date time.Time
+type ConfigPrice struct {
+	From string
+	To   string
+	Date time.Time
 }
 
 //// Helper Functions ///////
 
 // pathHelper is a simple wrapper for Sprintf
 // and exists only to reduce import expressions
-func pathHelper(f string, p... interface{}) string {
-  return fmt.Sprintf(f, p...)
+func pathHelper(f string, p ...interface{}) string {
+	return fmt.Sprintf(f, p...)
 }

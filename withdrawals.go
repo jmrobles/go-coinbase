@@ -20,8 +20,8 @@
 package coinbase
 
 import (
-  "bytes"
-  "encoding/json"
+	"bytes"
+	"encoding/json"
 )
 
 /*
@@ -34,44 +34,58 @@ type WithdrawalId string
 
 // ListWithdrawals requires an account ID and returns an APIWalletTransferList struct
 func (a *APIClient) ListWithdrawals(id AccountId) (withdrawals APIWalletTransferList, err error) {
-  path := pathHelper("/v2/accounts/%s/withdrawals", id)
-  err = a.Fetch("GET", path, nil, &withdrawals)
-  if err != nil {
-    return
-  }
-  return
+	path := pathHelper("/v2/accounts/%s/withdrawals", id)
+	err = a.Fetch("GET", path, nil, &withdrawals)
+	if err != nil {
+		return
+	}
+	return
 }
 
 // ShowWithdrawal requires an account ID, withdrawal ID and returns an APIWalletTransfer struct
 func (a *APIClient) ShowWithdrawal(id AccountId, wid WithdrawalId) (withdrawals APIWalletTransfer, err error) {
-  path := pathHelper("/v2/accounts/%s/withdrawals/%s", id, wid)
-  err = a.Fetch("GET", path, nil, &withdrawals)
-  if err != nil {
-    return
-  }
-  return
+	path := pathHelper("/v2/accounts/%s/withdrawals/%s", id, wid)
+	err = a.Fetch("GET", path, nil, &withdrawals)
+	if err != nil {
+		return
+	}
+	return
 }
 
-// WithdrawalFunds requires an account ID, APIWalletTransferOrder and returns an APIWalletTransfer struct
-func (a *APIClient) WithdrawalFunds(id AccountId, order APIWalletTransferOrder) (withdrawals APIWalletTransfer, err error) {
-  data, err := json.Marshal(order)
-  if err != nil {
-    return withdrawals, err
-  }
-  path := pathHelper("/v2/accounts/%s/withdrawals", id)
-  err = a.Fetch("POST", path, bytes.NewBuffer([]byte(data)), &withdrawals)
-  if err != nil {
-    return
-  }
-  return
+// WithdrawalFundsByAmount requires an account ID, APIWalletTransferOrder and returns an APIWalletTransfer struct
+func (a *APIClient) WithdrawalFundsByAmount(id AccountId, order APIWalletTransferOrderByAmount) (withdrawals APIWalletTransfer, err error) {
+	data, err := json.Marshal(order)
+	if err != nil {
+		return withdrawals, err
+	}
+	path := pathHelper("/v2/accounts/%s/withdrawals", id)
+	err = a.Fetch("POST", path, bytes.NewBuffer([]byte(data)), &withdrawals)
+	if err != nil {
+		return
+	}
+	return
+}
+
+// WithdrawalFundsByTotal requires an account ID, APIWalletTransferOrder and returns an APIWalletTransfer struct
+func (a *APIClient) WithdrawalFundsByTotal(id AccountId, order APIWalletTransferOrderByTotal) (withdrawals APIWalletTransfer, err error) {
+	data, err := json.Marshal(order)
+	if err != nil {
+		return withdrawals, err
+	}
+	path := pathHelper("/v2/accounts/%s/withdrawals", id)
+	err = a.Fetch("POST", path, bytes.NewBuffer([]byte(data)), &withdrawals)
+	if err != nil {
+		return
+	}
+	return
 }
 
 // CommitWithdrawal requires an account ID, deposit ID and returns an APIWalletTransfer struct
 func (a *APIClient) CommitWithdrawal(id AccountId, wid WithdrawalId) (withdrawals APIWalletTransfer, err error) {
-  path := pathHelper("/v2/accounts/%s/buys/%s/commit", id, wid)
-  err = a.Fetch("POST", path, nil, &withdrawals)
-  if err != nil {
-    return
-  }
-  return
+	path := pathHelper("/v2/accounts/%s/buys/%s/commit", id, wid)
+	err = a.Fetch("POST", path, nil, &withdrawals)
+	if err != nil {
+		return
+	}
+	return
 }

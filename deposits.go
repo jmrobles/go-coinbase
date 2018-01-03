@@ -20,8 +20,8 @@
 package coinbase
 
 import (
-  "bytes"
-  "encoding/json"
+	"bytes"
+	"encoding/json"
 )
 
 /*
@@ -34,44 +34,58 @@ type DepositId string
 
 // ListDeposits requires an account ID and returns an APIWalletTransferList struct
 func (a *APIClient) ListDeposits(id AccountId) (deposits APIWalletTransferList, err error) {
-  path := pathHelper("/v2/accounts/%s/deposits", id)
-  err = a.Fetch("GET", path, nil, &deposits)
-  if err != nil {
-    return
-  }
-  return
+	path := pathHelper("/v2/accounts/%s/deposits", id)
+	err = a.Fetch("GET", path, nil, &deposits)
+	if err != nil {
+		return
+	}
+	return
 }
 
 // ShowDeposit requires an account ID, deposit ID and returns an APIWalletTransfer struct
 func (a *APIClient) ShowDeposit(id AccountId, did DepositId) (deposits APIWalletTransfer, err error) {
-  path := pathHelper("/v2/accounts/%s/deposits/%s", id, did)
-  err = a.Fetch("GET", path, nil, &deposits)
-  if err != nil {
-    return
-  }
-  return
+	path := pathHelper("/v2/accounts/%s/deposits/%s", id, did)
+	err = a.Fetch("GET", path, nil, &deposits)
+	if err != nil {
+		return
+	}
+	return
 }
 
-// DepositFunds requires an account ID, APIWalletTransferOrder and returns an APIWalletTransfer struct
-func (a *APIClient) DepositFunds(id AccountId, order APIWalletTransferOrder) (deposits APIWalletTransfer, err error) {
-  data, err := json.Marshal(order)
-  if err != nil {
-    return deposits, err
-  }
-  path := pathHelper("/v2/accounts/%s/deposits", id)
-  err = a.Fetch("POST", path, bytes.NewBuffer([]byte(data)), &deposits)
-  if err != nil {
-    return
-  }
-  return
+// DepositFundsByAmount requires an account ID, APIWalletTransferOrder and returns an APIWalletTransfer struct
+func (a *APIClient) DepositFunds(id AccountId, order APIWalletTransferOrderByAmount) (deposits APIWalletTransfer, err error) {
+	data, err := json.Marshal(order)
+	if err != nil {
+		return deposits, err
+	}
+	path := pathHelper("/v2/accounts/%s/deposits", id)
+	err = a.Fetch("POST", path, bytes.NewBuffer([]byte(data)), &deposits)
+	if err != nil {
+		return
+	}
+	return
+}
+
+// DepositFundsByTotal requires an account ID, APIWalletTransferOrder and returns an APIWalletTransfer struct
+func (a *APIClient) DepositFundsByTotal(id AccountId, order APIWalletTransferOrderByTotal) (deposits APIWalletTransfer, err error) {
+	data, err := json.Marshal(order)
+	if err != nil {
+		return deposits, err
+	}
+	path := pathHelper("/v2/accounts/%s/deposits", id)
+	err = a.Fetch("POST", path, bytes.NewBuffer([]byte(data)), &deposits)
+	if err != nil {
+		return
+	}
+	return
 }
 
 // CommitDeposit requires an account ID, deposit ID and returns an APIWalletTransfer struct
 func (a *APIClient) CommitDeposit(id AccountId, did DepositId) (deposits APIWalletTransfer, err error) {
-  path := pathHelper("/v2/accounts/%s/buys/%s/commit", id, did)
-  err = a.Fetch("POST", path, nil, &deposits)
-  if err != nil {
-    return
-  }
-  return
+	path := pathHelper("/v2/accounts/%s/buys/%s/commit", id, did)
+	err = a.Fetch("POST", path, nil, &deposits)
+	if err != nil {
+		return
+	}
+	return
 }

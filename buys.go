@@ -20,8 +20,8 @@
 package coinbase
 
 import (
-  "bytes"
-  "encoding/json"
+	"bytes"
+	"encoding/json"
 )
 
 /*
@@ -34,44 +34,58 @@ type BuyId string
 
 // ListBuys requires an account ID and returns an APIWalletTransferList struct
 func (a *APIClient) ListBuys(id AccountId) (buys APIWalletTransferList, err error) {
-  path := pathHelper("/v2/accounts/%s/buys", id)
-  err = a.Fetch("GET", path, nil, &buys)
-  if err != nil {
-    return
-  }
-  return
+	path := pathHelper("/v2/accounts/%s/buys", id)
+	err = a.Fetch("GET", path, nil, &buys)
+	if err != nil {
+		return
+	}
+	return
 }
 
 // ShowBuy requires an account ID, buy ID and returns an APIWalletTransfer struct
 func (a *APIClient) ShowBuy(id AccountId, bid BuyId) (buys APIWalletTransfer, err error) {
-  path := pathHelper("/v2/accounts/%s/buys/%s", id, bid)
-  err = a.Fetch("GET", path, nil, &buys)
-  if err != nil {
-    return
-  }
-  return
+	path := pathHelper("/v2/accounts/%s/buys/%s", id, bid)
+	err = a.Fetch("GET", path, nil, &buys)
+	if err != nil {
+		return
+	}
+	return
 }
 
-// PlaceBuyOrder requires an account ID, APIWalletTransferOrder and returns an APIWalletTransfer struct
-func (a *APIClient) PlaceBuyOrder(id AccountId, order APIWalletTransferOrder) (buys APIWalletTransfer, err error) {
-  data, err := json.Marshal(order)
-  if err != nil {
-    return buys, err
-  }
-  path := pathHelper("/v2/accounts/%s/buys", id)
-  err = a.Fetch("POST", path, bytes.NewBuffer([]byte(data)), &buys)
-  if err != nil {
-    return
-  }
-  return
+// PlaceBuyOrderByAmount requires an account ID, APIWalletTransferOrderByAmount and returns an APIWalletTransfer struct
+func (a *APIClient) PlaceBuyOrderByAmount(id AccountId, order APIWalletTransferOrderByAmount) (buys APIWalletTransfer, err error) {
+	data, err := json.Marshal(order)
+	if err != nil {
+		return buys, err
+	}
+	path := pathHelper("/v2/accounts/%s/buys", id)
+	err = a.Fetch("POST", path, bytes.NewBuffer([]byte(data)), &buys)
+	if err != nil {
+		return
+	}
+	return
+}
+
+// PlaceBuyOrderByTotal requires an account ID, APIWalletTransferOrderByTotal and returns an APIWalletTransfer struct
+func (a *APIClient) PlaceBuyOrderByTotal(id AccountId, order APIWalletTransferOrderByTotal) (buys APIWalletTransfer, err error) {
+	data, err := json.Marshal(order)
+	if err != nil {
+		return buys, err
+	}
+	path := pathHelper("/v2/accounts/%s/buys", id)
+	err = a.Fetch("POST", path, bytes.NewBuffer([]byte(data)), &buys)
+	if err != nil {
+		return
+	}
+	return
 }
 
 // CommitBuy requires an account ID, buy ID and returns an APIWalletTransfer struct
 func (a *APIClient) CommitBuy(id AccountId, bid BuyId) (buys APIWalletTransfer, err error) {
-  path := pathHelper("/v2/accounts/%s/buys/%s/commit", id, bid)
-  err = a.Fetch("POST", path, nil, &buys)
-  if err != nil {
-    return
-  }
-  return
+	path := pathHelper("/v2/accounts/%s/buys/%s/commit", id, bid)
+	err = a.Fetch("POST", path, nil, &buys)
+	if err != nil {
+		return
+	}
+	return
 }

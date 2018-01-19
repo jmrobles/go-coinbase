@@ -1,5 +1,5 @@
 ALL_SRCS := $(wildcard *.go)
-PKG_DIR := $(GOPATH)/src/zauberstuhl/coinbase
+PKG_DIR := $(GOPATH)/src/github.com/jmrobles/go-coinbase
 
 all: compile
 test: gotest

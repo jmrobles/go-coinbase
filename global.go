@@ -168,9 +168,9 @@ Example request:
 */
 
 type APIWalletTransferOrderByAmount struct {
-	Amount                  float64 `json:"amount,string"`
-	Currency                string  `json:"currency,string"`
-	Payment_method          *string `json:"payment_method,string,omitempty"`
+	Amount                  float64 `json:"amount"`
+	Currency                string  `json:"currency"`
+	Payment_method          *string `json:"payment_method,omitempty"`
 	Agree_btc_amount_varies *bool   `json:"agree_btc_amount_varies,omitempty"`
 	Commit                  *bool   `json:"commit,omitempty"`
 	Quote                   *bool   `json:"quote,omitempty"`
@@ -188,9 +188,9 @@ Example request:
 
 */
 type APIWalletTransferOrderByTotal struct {
-	Total                   float64 `json:"total,string"`
-	Currency                string  `json:"currency,string"`
-	Payment_method          *string `json:"payment_method,string,omitempty"`
+	Total                   float64 `json:"total"`
+	Currency                string  `json:"currency"`
+	Payment_method          *string `json:"payment_method,omitempty"`
 	Agree_btc_amount_varies *bool   `json:"agree_btc_amount_varies,omitempty"`
 	Commit                  *bool   `json:"commit,omitempty"`
 	Quote                   *bool   `json:"quote,omitempty"`

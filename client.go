@@ -127,6 +127,10 @@ func (a *APIClient) Fetch(method, path string, body io.Reader, result interface{
 	if err != nil {
 		return err
 	}
+	if resp.StatusCode != 200 && resp.StatusCode != 201 {
+		return fmt.Errorf("Invalid response: %d", resp.StatusCode)
+	}
+
 	err = json.NewDecoder(resp.Body).Decode(result)
 	if err != nil {
 		return err
